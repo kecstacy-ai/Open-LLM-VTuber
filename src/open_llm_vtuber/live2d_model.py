@@ -48,7 +48,11 @@ class Live2dModel:
         self.emo_map: dict = {
             k.lower(): v for k, v in self.model_info["emotionMap"].items()
         }
-        self.emo_str: str = " ".join([f"[{key}]," for key in self.emo_map.keys()])
+        # line_* expressions belong to pre-recorded lip-synced lines; they are chosen by the server
+        # when the spoken sentence matches, so don't offer them to the LLM as expression tags.
+        self.emo_str: str = " ".join(
+            [f"[{key}]," for key in self.emo_map.keys() if not key.startswith("line_")]
+        )
         # emo_str is a string of the keys in the emoMap dictionary. The keys are enclosed in square brackets.
         # example: `"[fear], [anger], [disgust], [sadness], [joy], [neutral], [surprise]"`
 

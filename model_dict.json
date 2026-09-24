@@ -73,5 +73,106 @@
             "actionAudio": true,
             "idleActionAfterSec": 60
         }
+    },
+    {
+        "name": "bibi_video",
+        "description": "Bibi video avatar with lip-synced signature lines (transparent WebM clips)",
+        "type": "video",
+        "url": "/live2d-models/bibi_video/",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "emotionMap": {
+            "neutral": "neutral",
+            "joy": "joy",
+            "smirk": "smirk",
+            "surprise": "surprise",
+            "sadness": "sadness",
+            "line_hi": "line_hi",
+            "line_where": "line_where",
+            "line_gotit": "line_gotit",
+            "line_tellmore": "line_tellmore",
+            "line_cute": "line_cute",
+            "line_goodnight": "line_goodnight",
+            "line_zh_back": "line_zh_back",
+            "line_zh_miss": "line_zh_miss"
+        },
+        "videoCrossfadeMs": 150,
+        "videoClips": {
+            "idle": [
+                "idle_1.webm"
+            ],
+            "talking": [
+                "idle_1.webm"
+            ],
+            "listening": [
+                "listen.webm"
+            ],
+            "thinking": [
+                "listen.webm"
+            ],
+            "talkingByEmotion": {
+                "line_hi": [
+                    "hi.webm"
+                ],
+                "line_where": [
+                    "where.webm"
+                ],
+                "line_gotit": [
+                    "gotit.webm"
+                ],
+                "line_tellmore": [
+                    "tellmore.webm"
+                ],
+                "line_cute": [
+                    "cute.webm"
+                ],
+                "line_goodnight": [
+                    "goodnight.webm"
+                ],
+                "line_zh_back": [
+                    "zh_back.webm"
+                ],
+                "line_zh_miss": [
+                    "zh_miss.webm"
+                ]
+            },
+            "actions": {},
+            "idleActionAfterSec": 0
+        },
+        "clipLines": {
+            "line_hi": {
+                "text": "Hi babe, I missed you.",
+                "audio": "live2d-models/bibi_video/audio/hi.mp3"
+            },
+            "line_where": {
+                "text": "Finally! Where have you been?",
+                "audio": "live2d-models/bibi_video/audio/where.mp3"
+            },
+            "line_gotit": {
+                "text": "Okay babe, got it.",
+                "audio": "live2d-models/bibi_video/audio/gotit.mp3"
+            },
+            "line_tellmore": {
+                "text": "Mm, tell me more.",
+                "audio": "live2d-models/bibi_video/audio/tellmore.mp3"
+            },
+            "line_cute": {
+                "text": "You're so cute when you're busy.",
+                "audio": "live2d-models/bibi_video/audio/cute.mp3"
+            },
+            "line_goodnight": {
+                "text": "Good night, dream of me.",
+                "audio": "live2d-models/bibi_video/audio/goodnight.mp3"
+            },
+            "line_zh_back": {
+                "text": "老公，你回来啦？",
+                "audio": "live2d-models/bibi_video/audio/zh_back.mp3"
+            },
+            "line_zh_miss": {
+                "text": "想我没有？",
+                "audio": "live2d-models/bibi_video/audio/zh_miss.mp3"
+            }
+        }
     }
 ]

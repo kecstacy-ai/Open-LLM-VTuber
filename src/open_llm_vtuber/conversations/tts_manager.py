@@ -1,9 +1,12 @@
 import asyncio
+import difflib
 import json
+import os
 import re
+import shutil
 import uuid
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from loguru import logger
 
 from ..agent.output_types import DisplayText, Actions
@@ -11,6 +14,28 @@ from ..live2d_model import Live2dModel
 from ..tts.tts_interface import TTSInterface
 from ..utils.stream_audio import prepare_audio_payload
 from .types import WebSocketSend
+
+
+def _norm(text: str) -> str:
+    """Lowercase, drop punctuation/spaces and filler so near-identical lines compare equal."""
+    return re.sub(r"[\W_]+", "", text.lower().replace("mmm", "mm"))
+
+
+def match_clip_line(live2d_model: Live2dModel, text: str) -> Optional[Tuple[str, str]]:
+    """If the model has pre-recorded lines (model_dict "clipLines") and `text` is (nearly) one of
+    them, return (expression_name, audio_path). Used for lip-synced video lines."""
+    lines = (getattr(live2d_model, "model_info", None) or {}).get("clipLines") or {}
+    t = _norm(text)
+    if not t or not lines:
+        return None
+    best, best_score = None, 0.0
+    for expr, info in lines.items():
+        score = difflib.SequenceMatcher(None, t, _norm(info.get("text", ""))).ratio()
+        if score > best_score:
+            best, best_score = expr, score
+    if best and best_score >= 0.85 and os.path.exists(lines[best].get("audio", "")):
+        return best, lines[best]["audio"]
+    return None
 
 
 class TTSTaskManager:
@@ -139,7 +164,20 @@ class TTSTaskManager:
         """Process TTS generation and queue the result for ordered delivery"""
         audio_file_path = None
         try:
-            audio_file_path = await self._generate_audio(tts_engine, tts_text)
+            clip_hit = match_clip_line(live2d_model, tts_text)
+            if clip_hit:
+                # Pre-recorded line: use the clip's own audio and play its video, so lips match exactly.
+                expression, audio_src = clip_hit
+                audio_file_path = os.path.join(
+                    "cache", f"clipline_{uuid.uuid4().hex[:8]}{os.path.splitext(audio_src)[1]}"
+                )
+                os.makedirs("cache", exist_ok=True)
+                shutil.copyfile(audio_src, audio_file_path)
+                actions = actions or Actions()
+                actions.expressions = [expression]
+                logger.info(f"Clip line matched: {expression} for '{tts_text}'")
+            else:
+                audio_file_path = await self._generate_audio(tts_engine, tts_text)
             payload = prepare_audio_payload(
                 audio_path=audio_file_path,
                 display_text=display_text,
