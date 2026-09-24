@@ -151,8 +151,14 @@ class EdgeTTSConfig(I18nMixin):
     """Configuration for Edge TTS."""
 
     voice: str = Field(..., alias="voice")
+    # Optional per-language voices. When set, each sentence is spoken by the voice
+    # matching its language (English -> voice, Mandarin -> voice_zh, Cantonese -> voice_yue).
+    voice_zh: Optional[str] = Field(None, alias="voice_zh")
+    voice_yue: Optional[str] = Field(None, alias="voice_yue")
 
     DESCRIPTIONS: ClassVar[Dict[str, Description]] = {
+        "voice_zh": Description(en="Voice for Mandarin sentences (optional)", zh="Mandarin voice (optional)"),
+        "voice_yue": Description(en="Voice for Cantonese sentences (optional)", zh="Cantonese voice (optional)"),
         "voice": Description(
             en="Voice name to use for Edge TTS (use 'edge-tts --list-voices' to list available voices)",
             zh="Edge TTS 使用的语音名称（使用 'edge-tts --list-voices' 列出可用语音）",

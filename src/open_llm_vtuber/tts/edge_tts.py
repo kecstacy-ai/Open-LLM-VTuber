@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 
 import edge_tts
 from loguru import logger
@@ -13,9 +14,25 @@ sys.path.append(current_dir)
 # Use `edge-tts --list-voices` to list all available voices
 
 
+CJK_RE = re.compile(r"[㐀-鿿豈-﫿]")
+# Characters that are common in written Cantonese and rare in Mandarin
+CANTONESE_RE = re.compile(r"[係唔嘅咗佢哋冇嚟啲喺嗰乜嘢囉喎㗎啱畀睇攞咪嘞噉嚿]")
+
+
+def detect_lang(text: str) -> str:
+    """Return 'yue', 'zh' or 'en' for a sentence."""
+    if not CJK_RE.search(text):
+        return "en"
+    if CANTONESE_RE.search(text):
+        return "yue"
+    return "zh"
+
+
 class TTSEngine(TTSInterface):
-    def __init__(self, voice="en-US-AvaMultilingualNeural"):
+    def __init__(self, voice="en-US-AvaMultilingualNeural", voice_zh=None, voice_yue=None):
         self.voice = voice
+        # Per-language voices: native pronunciation for each language
+        self.voices = {"en": voice, "zh": voice_zh or voice, "yue": voice_yue or voice_zh or voice}
 
         self.temp_audio_file = "temp"
         self.file_extension = "mp3"
@@ -40,7 +57,8 @@ class TTSEngine(TTSInterface):
         file_name = self.generate_cache_file_name(file_name_no_ext, self.file_extension)
 
         try:
-            communicate = edge_tts.Communicate(text, self.voice)
+            voice = self.voices[detect_lang(text)]
+            communicate = edge_tts.Communicate(text, voice)
             communicate.save_sync(file_name)
         except Exception as e:
             logger.critical(f"\nError: edge-tts unable to generate audio: {e}")
