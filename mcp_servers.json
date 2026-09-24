@@ -2,11 +2,16 @@
     "mcp_servers": {
       "time": {
         "command": "uvx",
-        "args": ["mcp-server-time", "--local-timezone=Asia/Shanghai"]
+        "args": ["mcp-server-time", "--local-timezone=Australia/Melbourne"]
       },
       "ddg-search": {
         "command": "uvx",
         "args": ["duckduckgo-mcp-server"]
+      },
+      "openclaw": {
+        "command": ".venv/Scripts/python.exe",
+        "args": ["mcp_local/openclaw_bridge.py"],
+        "timeout": 200
       }
     }
 }

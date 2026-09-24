@@ -26,5 +26,54 @@
                 "": 1
             }
         }
+    },
+    {
+        "name": "doreen_video",
+        "description": "Doreen realistic video avatar (pre-rendered transparent WebM clips)",
+        "type": "video",
+        "url": "/live2d-models/doreen_video/",
+        "kScale": 0.5,
+        "initialXshift": 0,
+        "initialYshift": 0,
+        "emotionMap": {
+            "neutral": "neutral",
+            "joy": "joy",
+            "smirk": "smirk",
+            "surprise": "surprise",
+            "sadness": "sadness",
+            "dance": "dance",
+            "sing": "sing",
+            "pole": "pole"
+        },
+        "videoCrossfadeMs": 250,
+        "videoClips": {
+            "idle": [
+                "idle_1.webm",
+                "idle_2.webm"
+            ],
+            "talking": [
+                "talk_1.webm",
+                "talk_2.webm"
+            ],
+            "listening": [
+                "listen.webm"
+            ],
+            "thinking": [
+                "think.webm"
+            ],
+            "actions": {
+                "dance": [
+                    "dance.webm"
+                ],
+                "sing": [
+                    "sing.webm"
+                ],
+                "pole": [
+                    "pole.webm"
+                ]
+            },
+            "idleActionAfterSec": 60,
+            "actionAudio": true
+        }
     }
 ]

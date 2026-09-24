@@ -8,6 +8,7 @@ from typing import (
     Union,
     Optional,
 )
+from datetime import datetime
 from loguru import logger
 from .agent_interface import AgentInterface
 from ..output_types import SentenceOutput, DisplayText
@@ -30,10 +31,33 @@ from ...mcpp.types import ToolCallObject
 from ...mcpp.tool_executor import ToolExecutor
 
 
+def _time_mood_line() -> str:
+    """Local time + a time-of-day mood hint, recomputed every turn (companion 'day rhythm')."""
+    now = datetime.now()
+    h = now.hour
+    if 5 <= h < 11:
+        mood = "morning: soft, sleepy-sweet, cosy, encouraging him to start the day"
+    elif 11 <= h < 17:
+        mood = "daytime: bright, playful, teasing, cheering him on while he works"
+    elif 17 <= h < 22:
+        mood = "evening: relaxed, warm, more flirty and affectionate, winding down together"
+    else:
+        mood = "late night: quiet, intimate, gentle; nudge him to rest if it is very late"
+    return f"[Now: {now.strftime('%A %H:%M')} local time. Your current mood is {mood}.]"
+
+
 class BasicMemoryAgent(AgentInterface):
     """Agent with basic chat memory and tool calling support."""
 
-    _system: str = "You are a helpful assistant."
+    _base_system: str = "You are a helpful assistant."
+
+    @property
+    def _system(self) -> str:
+        return f"{self._base_system}\n\n{_time_mood_line()}"
+
+    @_system.setter
+    def _system(self, value: str) -> None:
+        self._base_system = value
 
     def __init__(
         self,
@@ -86,7 +110,7 @@ class BasicMemoryAgent(AgentInterface):
             )
 
         self._set_llm(llm)
-        self.set_system(system if system else self._system)
+        self.set_system(system if system else self._base_system)
 
         if self._use_mcpp and not all(
             [
