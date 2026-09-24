@@ -163,7 +163,8 @@ character_config:
         llm_api_key: '${OPENROUTER_API_KEY}' # substituted from env at load; never hardcode
         organization_id: null
         project_id: null
-        model: 'qwen/qwen3-235b-a22b-2507' # cheap non-thinking dev model (~$0.09 in / $0.35 out per 1M tokens)
+        model: 'qwen/qwen3-vl-235b-a22b-instruct' # vision + tools, non-thinking; best tool reliability in our tests (~$0.21 in / $1.90 out per 1M)
+        # extra_body: {reasoning: {enabled: false}} # for thinking models such as xiaomi/mimo-v2.6-flash
         temperature: 0.8 # value between 0 to 2
         interrupt_method: 'user'
         # This is the method to use for prompting the interruption signal. 

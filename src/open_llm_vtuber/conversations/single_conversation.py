@@ -165,7 +165,7 @@ async def process_single_conversation(
         logger.info(f"🤡👍 Conversation {session_emoji} cancelled because interrupted.")
         raise
     except Exception as e:
-        logger.error(f"Error in conversation chain: {e}")
+        logger.exception(f"Error in conversation chain: {e!r}")
         await websocket_send(
             json.dumps({"type": "error", "message": f"Conversation error: {str(e)}"})
         )

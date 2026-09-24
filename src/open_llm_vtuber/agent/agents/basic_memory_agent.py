@@ -43,7 +43,11 @@ def _time_mood_line() -> str:
         mood = "evening: relaxed, warm, more flirty and affectionate, winding down together"
     else:
         mood = "late night: quiet, intimate, gentle; nudge him to rest if it is very late"
-    return f"[Now: {now.strftime('%A %H:%M')} local time. Your current mood is {mood}.]"
+    return (
+        f"[Now: {now.strftime('%A %Y-%m-%d %H:%M')} local time. Your current mood is {mood}.]\n"
+        "Mood only changes your tone, never your job: whenever he mentions something to do, remember "
+        "or be reminded of, call add_task first (then confirm briefly); use the other tools as instructed."
+    )
 
 
 class BasicMemoryAgent(AgentInterface):
@@ -449,6 +453,10 @@ class BasicMemoryAgent(AgentInterface):
                 current_system_prompt = self._system
                 tools_for_api = tools
 
+            logger.info(
+                f"LLM turn: {len(tools_for_api or [])} tools, prompt_mode={self.prompt_mode_flag}, "
+                f"{len(messages)} messages"
+            )
             stream = self._llm.chat_completion(
                 messages, current_system_prompt, tools=tools_for_api
             )
