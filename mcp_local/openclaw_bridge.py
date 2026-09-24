@@ -13,6 +13,7 @@ gateway.http.endpoints.chatCompletions.enabled = true). Configuration comes from
 """
 import os
 import sys
+import time
 
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -59,7 +60,7 @@ async def ask_openclaw_doreen(task: str) -> str:
     body = {
         "model": f"openclaw/{cfg('OPENCLAW_AGENT', 'doreen')}",
         # stable session so Doreen keeps context across voice requests
-        "user": "conv:desktop-companion",
+        "user": cfg("OPENCLAW_SESSION", "conv:desktop-companion"),
         "messages": [{
             "role": "user",
             "content": (
@@ -71,6 +72,10 @@ async def ask_openclaw_doreen(task: str) -> str:
     try:
         async with httpx.AsyncClient(timeout=float(cfg("OPENCLAW_TIMEOUT", "180"))) as client:
             r = await client.post(f"{base}/v1/chat/completions", json=body, headers=headers)
+            if r.status_code == 500:
+                # A failed run can leave the gateway session lane stuck; retry once on a fresh session.
+                body["user"] = f"{body['user']}-{int(time.time())}"
+                r = await client.post(f"{base}/v1/chat/completions", json=body, headers=headers)
         if r.status_code != 200:
             return f"OpenClaw returned HTTP {r.status_code}: {r.text[:300]}"
         return r.json()["choices"][0]["message"]["content"] or "(Doreen returned an empty reply)"
