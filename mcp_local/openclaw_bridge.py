@@ -9,6 +9,7 @@ gateway.http.endpoints.chatCompletions.enabled = true). Configuration comes from
   OPENCLAW_AGENT          agent id, default "doreen"
   OPENCLAW_MODEL          optional backend override sent as x-openclaw-model
                           (e.g. an OpenRouter model); empty = Doreen's own model
+  OPENCLAW_FALLBACK_MODEL used once if the primary fails (e.g. Claude subscription limit hit)
   OPENCLAW_TIMEOUT        seconds, default 180
 """
 import os
@@ -69,13 +70,23 @@ async def ask_openclaw_doreen(task: str) -> str:
             ),
         }],
     }
+    fallback = cfg("OPENCLAW_FALLBACK_MODEL")
     try:
         async with httpx.AsyncClient(timeout=float(cfg("OPENCLAW_TIMEOUT", "180"))) as client:
-            r = await client.post(f"{base}/v1/chat/completions", json=body, headers=headers)
-            if r.status_code == 500:
-                # A failed run can leave the gateway session lane stuck; retry once on a fresh session.
-                body["user"] = f"{body['user']}-{int(time.time())}"
-                r = await client.post(f"{base}/v1/chat/completions", json=body, headers=headers)
+            url = f"{base}/v1/chat/completions"
+            session = body["user"]
+            r = await client.post(url, json=body, headers=headers)
+            if r.status_code != 200:
+                # A failed/finished CLI run can leave the gateway session lane stuck
+                # ("MCP runtime cleanup could not confirm closure"): retry on a fresh session.
+                body["user"] = f"{session}-{int(time.time())}"
+                r = await client.post(url, json=body, headers=headers)
+            if r.status_code != 200 and fallback and fallback != model_override:
+                # Primary (e.g. Claude subscription) still failing or out of usage:
+                # use the pay-as-you-go fallback model once.
+                headers["x-openclaw-model"] = fallback
+                body["user"] = f"{session}-fb-{int(time.time())}"
+                r = await client.post(url, json=body, headers=headers)
         if r.status_code != 200:
             return f"OpenClaw returned HTTP {r.status_code}: {r.text[:300]}"
         return r.json()["choices"][0]["message"]["content"] or "(Doreen returned an empty reply)"
