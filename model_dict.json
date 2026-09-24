@@ -56,10 +56,22 @@
             "listening": [
                 "listen.webm"
             ],
-            "thinking": [],
-            "actions": {},
+            "thinking": [
+                "think.webm"
+            ],
+            "actions": {
+                "dance": [
+                    "dance.webm"
+                ],
+                "sing": [
+                    "sing.webm"
+                ],
+                "pole": [
+                    "pole.webm"
+                ]
+            },
             "actionAudio": true,
-            "idleActionAfterSec": 0
+            "idleActionAfterSec": 60
         }
     }
 ]
