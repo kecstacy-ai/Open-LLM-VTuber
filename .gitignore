@@ -76,3 +76,7 @@ private/
 mcp_servers.json
 
 .vscode/
+# planner database (personal tasks)
+data/
+# personal avatar media
+live2d-models/doreen_video/

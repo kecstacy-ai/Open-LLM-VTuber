@@ -12,6 +12,11 @@
         "command": ".venv/Scripts/python.exe",
         "args": ["mcp_local/openclaw_bridge.py"],
         "timeout": 200
+      },
+      "planner": {
+        "command": ".venv/Scripts/python.exe",
+        "args": ["mcp_local/planner_mcp.py"],
+        "timeout": 30
       }
     }
 }

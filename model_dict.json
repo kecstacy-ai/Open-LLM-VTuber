@@ -29,7 +29,7 @@
     },
     {
         "name": "doreen_video",
-        "description": "Doreen realistic video avatar (pre-rendered transparent WebM clips)",
+        "description": "Doreen realistic video avatar (transparent WebM clips)",
         "type": "video",
         "url": "/live2d-models/doreen_video/",
         "kScale": 0.5,
@@ -48,32 +48,18 @@
         "videoCrossfadeMs": 250,
         "videoClips": {
             "idle": [
-                "idle_1.webm",
-                "idle_2.webm"
+                "idle_1.webm"
             ],
             "talking": [
-                "talk_1.webm",
-                "talk_2.webm"
+                "talk_1.webm"
             ],
             "listening": [
                 "listen.webm"
             ],
-            "thinking": [
-                "think.webm"
-            ],
-            "actions": {
-                "dance": [
-                    "dance.webm"
-                ],
-                "sing": [
-                    "sing.webm"
-                ],
-                "pole": [
-                    "pole.webm"
-                ]
-            },
-            "idleActionAfterSec": 60,
-            "actionAudio": true
+            "thinking": [],
+            "actions": {},
+            "actionAudio": true,
+            "idleActionAfterSec": 0
         }
     }
 ]

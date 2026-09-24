@@ -32,7 +32,11 @@ async def handle_conversation_trigger(
     """Handle triggers that start a conversation"""
     metadata = None
 
-    if msg_type == "ai-speak-signal":
+    if msg_type == "ai-speak-signal" and data.get("reminder"):
+        # Planner reminder from the client: say it in character, keep it out of memory/history
+        user_input = "[System reminder, not from Boss] " + str(data["reminder"])[:500]
+        metadata = {"proactive_speak": True, "skip_memory": True, "skip_history": True}
+    elif msg_type == "ai-speak-signal":
         try:
             # Get proactive speak prompt from config
             prompt_name = "proactive_speak_prompt"
